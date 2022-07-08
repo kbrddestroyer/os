@@ -4,10 +4,11 @@ org     0x7C00
 ;-----------------------------------------------;
 ;                BOOTLOADER CODE                ;
 ;-----------------------------------------------;
-; bootloader РґР»СЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ СЃ BIOS
+; bootloader для BIOS
+; загружает код kernel
 ; kernel - [0000:0500h]
 
-macro   print           text                            ; ГЏРњР°РєСЂРѕСЃ РґР»СЏ РІС‹РІРѕРґР° С‚РµРєСЃС‚Р° (INT 10h)
+macro   print           text                            ; Последовательный вывод (INT 10h)
 {
 LOCAL   print
 LOCAL   endm
@@ -18,7 +19,7 @@ print:
         lodsb
         test            al, al
         jz              .end
-        mov             ah, 0x0E
+        mov             ah, 0x0E                        ; Функция вывода символа
         mov             bl, 0x07
         int             0x10
         jmp             print
@@ -44,13 +45,13 @@ start:
         mov             ch, 0
         mov             cl, 02h
         mov             dh, 0
-        mov             al, 08h                         ; РљРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РіСЂСѓР¶Р°РµРјС‹С… СЃРµРєС‚РѕСЂРѕРІ
+        mov             al, 08h                         ; Кол-во секторов ядра
         mov             ah, 02h
-        int             13h                             ; Р—Р°РіСЂСѓР·РєР° СЃРµРєС‚РѕСЂРѕРІ
+        int             13h                             ; Загрузка сектора
         jmp             0000:0500h
 
  
 msg     db              'OS BOOT INITIALISED', 0x0d, 0x0a, 0
 
 times   510-($-$$)      db 0
-db      0x55,           0xaa                            ; РЎРёРіРЅР°С‚СѓСЂР° Р·Р°РіСЂСѓР·РѕС‡РЅРѕРіРѕ СЃРµРєС‚РѕСЂР°
+db      0x55,           0xaa                            ; Сигнатура загрузочного сектора
